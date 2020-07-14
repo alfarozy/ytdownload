@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+from pytube import YouTube 
+import os
+url = []
+act = ""
+
+
+def downloadplaylist():
+    f = open('/opt/ytd/link_yt','r')
+    line = f.readlines()
+
+    #filter
+    for x in line:
+        url.append(x.strip())
+
+    f.close()
+    #akhiri file
+    download_here = '/opt/ytd/Downloads'
+    for yturl in url:
+        #downlaod per video
+        if yturl == '':#filter jika ada baris yang kosong
+            continue
+            
+        yt = YouTube(yturl)
+        print("Downloading :"+yt.title)
+        yt.streams.first().download(download_here)
+
+def home(msg=""):
+    os.system("clear")
+    print("""         
+YTD playlist, Download everything we want
+__   _______ ____        _             _ _     _   
+\ \ / /_   _|  _ \ _ __ | | __ _ _   _| (_)___| |_ 
+ \ V /  | | | | | | '_ \| |/ _` | | | | | / __| __|
+  | |   | | | |_| | |_) | | (_| | |_| | | \__ \ |_ 
+  |_|   |_| |____/| .__/|_|\__,_|\__, |_|_|___/\__|
+                  |_|             |___/ by:alfarozy_an 
+    """)
+
+    print('-'*64)
+    if msg == 'link':
+        os.system('cat -n /opt/ytd/link_yt')
+    elif msg == 'downloaded':
+        os.system("ls -s -h --color=auto /opt/ytd/Downloads/")
+    else:
+        print(msg)
+    print('-'*64)
+    act = input('YTDownload > ')
+    if act == 'y' or act == 'Y' or act == 'download':
+        downloadplaylist()
+    elif act == 'e' or act =='E' or act=='q' or act == 'exit':
+        print('bye bye')
+        exit()
+    elif act == 'u' or act =='U' or act == 'url':
+        os.system("nano /opt/ytd/link_yt")
+        home("Link Dirperbaharui")
+
+    elif act == 'h' or act =='h' or act =='help':
+        home(" dd \tUntuk melihat hasil unduhan\n Y \tUntuk mendownload\n U \tUntuk Mengedit Link yt\n L \tUntuk Melihat semua link\n T \tUntuk menempelkan Folder Downloads \n E \tUntuk keluar\n ")
+    elif act == 'l' or act =='L' or act == 'list':
+        
+        home('link')
+    elif act == 'dd' or act =='DD' or act == 'downloaded':
+        home('downloaded')
+    elif act == 't' or act =='T' or act== 'tempel':
+        if os.path.isdir('/root/Downloads/YTPlaylist'):
+            home("Gagl menempelkan,Folder telah ditempelkan sebelumnya")
+        else:
+            os.system("ln -s -r /opt/ytd/Downloads /root/Downloads/YTPlaylist")
+            home("Berhasil Ditempelkan, unduhan selanjutnya akan disimpan di folder Downloads")
+    else:
+        home("Terjadi Kesalahan, H untuk bantuan")
+
+if os.path.isfile('/opt/ytd/link_yt'):
+    home("Have a nice day")
+else:
+    print('file link_yt tidak ada atau terhapus,jalankan perintah berikut \n sudo touch /opt/ytd/link_yt')
+    exit()
