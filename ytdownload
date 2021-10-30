@@ -1,11 +1,18 @@
 #!/usr/bin/python3
-from pytube import YouTube 
+try:
+    from pytube import YouTube,Playlist 
+except print(0):
+    print('Silahkan install pytube3 dengan menjalankan, sudo pip3 install pytube')
+    exit()
 import os
 url = []
 act = ""
 
+download_playlist = "./Downloads/playlist"
+download_here = './Downloads'
 
-def downloadplaylist():
+
+def downloadVideo():
     f = open('./link_yt','r')
     line = f.readlines()
 
@@ -15,7 +22,6 @@ def downloadplaylist():
 
     f.close()
     #akhiri file
-    download_here = './Downloads'
     for yturl in url:
         #downlaod per video
         if yturl == '':#filter jika ada baris yang kosong
@@ -23,7 +29,7 @@ def downloadplaylist():
             
         yt = YouTube(yturl)
         print("Downloading :"+yt.title)
-        yt.streams.first().download(download_here)
+        yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(download_here)
     home("Video Berhasil didownload")
 def home(msg=""):
     os.system("clear")
@@ -40,28 +46,44 @@ __   _______ ____        _             _ _     _
     print('-'*64)
     if msg == 'link':
         os.system('cat -n ./link_yt')
-    elif msg == 'downloaded':
+    elif msg == 'downloaded_video':
         os.system("ls -s -h --color=auto ./Downloads/")
+    elif msg == 'downloaded_playlist':
+        os.system("ls -s -h --color=auto ./Downloads/playlist")
     else:
         print(msg)
     print('-'*64)
     act = input('YTDownload > ')
     if act == 'y' or act == 'Y' or act == 'download':
-        downloadplaylist()
+        downloadVideo()
     elif act == 'e' or act =='E' or act=='q' or act == 'exit':
         print('bye bye')
         exit()
+    elif act == 'p' or act =='P':
+        playlist_url = input('Url youtube playlist : ')
+        p = Playlist(playlist_url)
+        print(f"Sedang mendownload video playlist : " + p.title)
+        print('-'*64)
+        for video in p.videos:
+            print(video.title)
+            video.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first().download(download_playlist)
+            
+        home('Berhasil mendonwload playlist , dp untuk melihat hasil download playlist atau h untuk bantuan')
+        
+
     elif act == 'u' or act =='U' or act == 'url':
         os.system("nano ./link_yt")
         home("Link Dirperbaharui")
 
     elif act == 'h' or act =='h' or act =='help':
-        home(" dd \tUntuk melihat hasil unduhan\n Y \tUntuk mendownload\n U \tUntuk Mengedit Link yt\n L \tUntuk Melihat semua link\n E \tUntuk keluar\n ")
+        home(" dd \tUntuk melihat hasil unduhan\n dp \tUntuk melihat hasil unduhan playlist\n p \tUntuk mendownload playlist\n Y \tUntuk mendownload\n U \tUntuk Mengedit Link yt\n L \tUntuk Melihat semua link\n E \tUntuk keluar\n ")
     elif act == 'l' or act =='L' or act == 'list':
         
         home('link')
-    elif act == 'dd' or act =='DD' or act == 'downloaded':
-        home('downloaded')
+    elif act == 'dd' or act =='DD' or act == 'downloaded_video':
+        home('downloaded_video')
+    elif act == 'dp' or act =='DP' or act == 'downloaded_playlist':
+        home('downloaded_playlist')
     
     else:
         home("Terjadi Kesalahan, H untuk bantuan")
