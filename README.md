@@ -7,7 +7,6 @@ Download video & playlist youtube menggunakan terminal di linux.
 1. python3
 2. pytube3 - pip3 install pytub
 
-python3 ytdownload
 
 ## install
 
